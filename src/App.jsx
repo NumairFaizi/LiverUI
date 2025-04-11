@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import InputField from "./components/InputField";
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
 
 function App() {
 
   const [data, setData] = useState({})
+
   const [formData, setFormData] = useState({
     Age: "",
     Gender: "",
@@ -44,11 +48,9 @@ function App() {
 
       const result = await res.json();
 
-      const { prediction, probability } = result
-
       setData(result)
 
-      console.log(prediction, probability);
+      // console.log(result);
 
     } catch (err) {
       console.error("Prediction request failed:", err);
@@ -87,11 +89,18 @@ function App() {
           </h2>
           <div className="flex justify-evenly item-center border-b-2 border-from-teal-500 ">
 
-            <h3>Preediction: {data.prediction}</h3>
+            <h3>Prediction: {data.prediction}</h3>
             <h3>Probability: {data.probability} %</h3>
           </div>
           <div className="text-slate-700 text-lg min-h-[100px] leading-relaxed">
-            {/* Optional: Show response here */}
+
+            <p>{data.llmResponse}</p>
+            {/* <ReactMarkdown
+              className=" text-slate-700 max-w-none"
+              remarkPlugins={[remarkGfm]}
+            >
+              {data.llmResponse?.replace(/\\n/g, '\n')}
+            </ReactMarkdown> */}
           </div>
         </div>
       </div>
