@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import InputField from "./components/InputField";
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import Loader from "./components/Loader";
 
 function App() {
-
-  const [data, setData] = useState({})
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(false); // Added here
 
   const [formData, setFormData] = useState({
     Age: "",
@@ -18,7 +18,7 @@ function App() {
     Aspartate_Aminotransferase: "",
     Total_Protiens: "",
     Albumin: "",
-    Albumin_and_Globulin_Ratio: ""
+    Albumin_and_Globulin_Ratio: "",
   });
 
   const handleChange = (label, value) => {
@@ -26,6 +26,8 @@ function App() {
   };
 
   const handleDetect = async () => {
+    setLoading(true);
+
     const dataToSend = {
       Total_Bilirubin: formData.Total_Bilirubin,
       Direct_Bilirubin: formData.Direct_Bilirubin,
@@ -47,14 +49,20 @@ function App() {
       });
 
       const result = await res.json();
-
-      setData(result)
-
+      setData(result);
       console.log(result);
+
+      setTimeout(() => {
+
+        setLoading(false);
+      }, 3000)
+
+      
 
     } catch (err) {
       console.error("Prediction request failed:", err);
     }
+
   };
 
   return (
@@ -88,21 +96,19 @@ function App() {
             🤖 LLM Response
           </h2>
           <div className="flex justify-evenly item-center border-b-2 border-from-teal-500 ">
-
             <h3>Prediction: {data.prediction}</h3>
             <h3>Probability: {data.probability} %</h3>
           </div>
           <div className="text-slate-700 text-lg min-h-[100px] leading-relaxed">
-
-            {/* <p>{data.llmResponse}</p>
-             */}
             <div className="prose prose-lg max-w-none prose-headings:text-blue-700 prose-li:marker:text-teal-600 prose-strong:text-teal-700 prose-a:text-blue-500">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {data.llmResponse}
-              </ReactMarkdown>
+              {loading ? (
+                <Loader />
+              ) : (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {data.llmResponse}
+                </ReactMarkdown>
+              )}
             </div>
-
-
           </div>
         </div>
       </div>
