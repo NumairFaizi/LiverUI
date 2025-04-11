@@ -85,10 +85,10 @@ function App() {
           <h2 className="text-2xl md:text-3xl font-extrabold tracking-wide text-blue-700 uppercase mb-6">
             🤖 LLM Response
           </h2>
-          <div className="flex justify-evenly item-center">
+          <div className="flex justify-evenly item-center border-b-2 border-from-teal-500 ">
 
             <h3>Preediction: {data.prediction}</h3>
-            <h3>Probability: {data.probability}</h3>
+            <h3>Probability: {data.probability} %</h3>
           </div>
           <div className="text-slate-700 text-lg min-h-[100px] leading-relaxed">
             {/* Optional: Show response here */}
