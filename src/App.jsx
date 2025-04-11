@@ -50,7 +50,7 @@ function App() {
 
       setData(result)
 
-      // console.log(result);
+      console.log(result);
 
     } catch (err) {
       console.error("Prediction request failed:", err);
@@ -94,13 +94,15 @@ function App() {
           </div>
           <div className="text-slate-700 text-lg min-h-[100px] leading-relaxed">
 
-            <p>{data.llmResponse}</p>
-            {/* <ReactMarkdown
-              className=" text-slate-700 max-w-none"
-              remarkPlugins={[remarkGfm]}
-            >
-              {data.llmResponse?.replace(/\\n/g, '\n')}
-            </ReactMarkdown> */}
+            {/* <p>{data.llmResponse}</p>
+             */}
+            <div className="prose prose-lg max-w-none prose-headings:text-blue-700 prose-li:marker:text-teal-600 prose-strong:text-teal-700 prose-a:text-blue-500">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {data.llmResponse}
+              </ReactMarkdown>
+            </div>
+
+
           </div>
         </div>
       </div>
