@@ -1,7 +1,60 @@
-import React from "react";
-import Typewriter from "typewriter-effect";
+import React, { useState } from "react";
+import InputField from "./components/InputField";
 
 function App() {
+
+  const [data, setData] = useState({})
+  const [formData, setFormData] = useState({
+    Age: "",
+    Gender: "",
+    Total_Bilirubin: "",
+    Direct_Bilirubin: "",
+    Alkaline_Phosphotase: "",
+    Alamine_Aminotransferase: "",
+    Aspartate_Aminotransferase: "",
+    Total_Protiens: "",
+    Albumin: "",
+    Albumin_and_Globulin_Ratio: ""
+  });
+
+  const handleChange = (label, value) => {
+    setFormData((prev) => ({ ...prev, [label]: value }));
+  };
+
+  const handleDetect = async () => {
+    const dataToSend = {
+      Total_Bilirubin: formData.Total_Bilirubin,
+      Direct_Bilirubin: formData.Direct_Bilirubin,
+      Alkaline_Phosphotase: formData.Alkaline_Phosphotase,
+      Alamine_Aminotransferase: formData.Alamine_Aminotransferase,
+      Aspartate_Aminotransferase: formData.Aspartate_Aminotransferase,
+      Total_Protiens: formData.Total_Protiens,
+      Albumin: formData.Albumin,
+      Albumin_and_Globulin_Ratio: formData.Albumin_and_Globulin_Ratio,
+    };
+
+    try {
+      const res = await fetch("/api/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      const result = await res.json();
+
+      const { prediction, probability } = result
+
+      setData(result)
+
+      console.log(prediction, probability);
+
+    } catch (err) {
+      console.error("Prediction request failed:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-cyan-50 via-white to-blue-100 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -10,19 +63,20 @@ function App() {
             🧬 Liver Disease Detection
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <InputField label="Age" />
-            <InputField label="Gender (1: Male, 0: Female)" />
-            <InputField label="Total Bilirubin" />
-            <InputField label="Direct Bilirubin" />
-            <InputField label="Alkaline Phosphotase" />
-            <InputField label="Alamine Aminotransferase" />
-            <InputField label="Aspartate Aminotransferase" />
-            <InputField label="Total Proteins" />
-            <InputField label="Albumin" />
-            <InputField label="Albumin and Globulin Ratio" />
+            {Object.keys(formData).map((key) => (
+              <InputField
+                key={key}
+                label={key}
+                value={formData[key]}
+                onChange={(val) => handleChange(key, val)}
+              />
+            ))}
           </div>
-          <button className="mt-8 w-full bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-3 rounded-full text-lg font-semibold tracking-wide shadow-md transition duration-300 
-                             hover:shadow-[0_0_15px_5px_rgba(0,204,204,0.5)] hover:scale-105">
+          <button
+            onClick={handleDetect}
+            className="mt-8 w-full bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-3 rounded-full text-lg font-semibold tracking-wide shadow-md transition duration-300 
+                             hover:shadow-[0_0_15px_5px_rgba(0,204,204,0.5)] hover:scale-105"
+          >
             DETECT
           </button>
         </div>
@@ -31,36 +85,18 @@ function App() {
           <h2 className="text-2xl md:text-3xl font-extrabold tracking-wide text-blue-700 uppercase mb-6">
             🤖 LLM Response
           </h2>
+          <div className="flex justify-evenly item-center">
+
+            <h3>Preediction: {data.prediction}</h3>
+            <h3>Probability: {data.probability}</h3>
+          </div>
           <div className="text-slate-700 text-lg min-h-[100px] leading-relaxed">
-            <Typewriter
-              options={{
-                strings: [
-                  "Fill in your medical values to receive an instant health analysis powered by AI.",
-                  "Ensure accurate input for best results. Your health is our priority.",
-                ],
-                autoStart: true,
-                loop: true,
-                delay: 35,
-              }}
-            />
+            {/* Optional: Show response here */}
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-const InputField = ({ label }) => (
-  <div>
-    <label className="block text-sm font-medium text-slate-600 mb-1">{label}</label>
-    <input
-      type="number"
-      className="w-full bg-blue-50 border border-blue-200 rounded-full px-4 py-2 text-slate-800 
-                 focus:outline-none focus:ring-2 focus:ring-cyan-500 
-                 transition duration-300
-                 hover:ring-2 hover:ring-cyan-300 hover:shadow-[0_0_10px_rgba(0,200,255,0.4)]"
-    />
-  </div>
-);
 
 export default App;
